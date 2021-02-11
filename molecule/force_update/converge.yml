@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Check if force_update_test_file Exists
+      stat:
+        path: /usr/local/go/force_update_file"
+      register: force_update_file
+
+    - name: Ensure the Update was Forced
+      ansible.builtin.fail:
+        msg: The update was not forced!
+      when: force_update_file.stat.exists

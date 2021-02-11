@@ -1,0 +1,26 @@
+---
+# Environment setup.
+- name: Set GOROOT
+  ansible.builtin.lineinfile:
+    dest: /etc/profile.d/goroot.sh
+    line: "export GOROOT={{ goroot }}"
+    create: yes
+    mode: 0644
+  become: yes
+  when: golang_goroot
+
+- name: Create GOPATH Directory
+  ansible.builtin.file:
+    path: "{{ golang_gopath }}"
+    state: directory
+    mode: 0755
+  register: folder
+  when: golang_gopath is defined and golang_gopath | length > 0
+
+- name: Set GOPATH
+  ansible.builtin.template:
+    src: gopath.sh.j2
+    dest: /etc/profile.d/gopath.sh
+    mode: 0644
+  become: yes
+  when: golang_gopath is defined and golang_gopath | length > 0

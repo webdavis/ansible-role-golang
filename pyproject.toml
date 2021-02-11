@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ansible-role-golang"
+version = "1.0.0"
+description = "Ansible Role that installs the Go programming language, with support for version specific installs."
+authors = ["Stephen A. Davis <stephen@webdavis.io>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+molecule = {extras = ["ansible", "docker", "lint"], version = "^3.2.3"}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

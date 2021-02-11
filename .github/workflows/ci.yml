@@ -1,0 +1,148 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches-ignore:
+      - 'master'
+  schedule:
+    - cron: "0 4 * * 4"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the codebase
+        uses: actions/checkout@v2
+
+      - name: Retrieve Python version
+        run: echo "::set-output name=PYTHON_VERSION::$(cat .python-version)"
+        id: python_version
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ steps.python_version.outputs.PYTHON_VERSION }}
+
+      - name: Retrieve Poetry version
+        run: echo "::set-output name=POETRY_VERSION::$(cat .poetry-version)"
+        id: poetry_version
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ steps.poetry_version.outputs.POETRY_VERSION }}
+
+      - name: Install Python dependencies
+        run: poetry install
+
+      - name: YAMLlint
+        run: poetry run yamllint .
+
+      - name: Ansible Lint
+        run: poetry run ansible-lint .
+
+  test:
+    name: "Molecule: ${{ matrix.os }} (${{ matrix.playbook }})"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu2004
+            playbook: converge.yml
+          - os: ubuntu2004
+            playbook: package_install_with_go_env_vars.yml
+          - os: ubuntu2004
+            playbook: binary_install.yml
+          - os: ubuntu2004
+            playbook: binary_install_with_checksum.yml
+          - os: ubuntu2004
+            playbook: binary_install_with_goroot_versioned.yml
+          - os: ubuntu2004
+            playbook: binary_install_with_go_env_vars.yml
+          - os: debian10
+            playbook: converge.yml
+          - os: debian10
+            playbook: package_install_with_go_env_vars.yml
+          - os: debian10
+            playbook: binary_install.yml
+          - os: debian10
+            playbook: binary_install_with_checksum.yml
+          - os: debian10
+            playbook: binary_install_with_goroot_versioned.yml
+          - os: debian10
+            playbook: binary_install_with_go_env_vars.yml
+
+    steps:
+      - name: Checkout the codebase
+        uses: actions/checkout@v2
+
+      - name: Retrieve Python version
+        run: echo "::set-output name=PYTHON_VERSION::$(cat .python-version)"
+        id: python_version
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ steps.python_version.outputs.PYTHON_VERSION }}
+
+      - name: Retrieve Poetry version
+        run: echo "::set-output name=POETRY_VERSION::$(cat .poetry-version)"
+        id: poetry_version
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ steps.poetry_version.outputs.POETRY_VERSION }}
+
+      - name: Install Python dependencies
+        run: poetry install
+
+      - name: Run Molecule tests
+        run: poetry run molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_OS: ${{ matrix.os }}
+          MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
+
+  test_force_update:
+    name: "Molecule: ${{ matrix.os }} (force update)"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu2004
+          - debian10
+
+    steps:
+      - name: Checkout the codebase
+        uses: actions/checkout@v2
+
+      - name: Retrieve Python version
+        run: echo "::set-output name=PYTHON_VERSION::$(cat .python-version)"
+        id: python_version
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ steps.python_version.outputs.PYTHON_VERSION }}
+
+      - name: Retrieve Poetry version
+        run: echo "::set-output name=POETRY_VERSION::$(cat .poetry-version)"
+        id: poetry_version
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ steps.poetry_version.outputs.POETRY_VERSION }}
+
+      - name: Install Python dependencies
+        run: poetry install
+
+      - name: Run Molecule tests
+        run: poetry run molecule test --scenario-name force_update
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_OS: ${{ matrix.os }}

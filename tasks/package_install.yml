@@ -1,0 +1,20 @@
+---
+- name: Include Version-specific Variables for Debian-based Operating Systems
+  ansible.builtin.include_vars: Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Define go_packages
+  ansible.builtin.set_fact:
+    go_packages: "{{ __go_packages | list }}"
+  when: golang_packages is not defined
+
+- ansible.builtin.include_tasks: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Define GOROOT
+  ansible.builtin.set_fact:
+    goroot: /usr/lib/go
+  when: golang_goroot
+
+- ansible.builtin.include_tasks: set_env_vars.yml
+  when: golang_goroot or (golang_gopath is defined and golang_gopath | length > 0)

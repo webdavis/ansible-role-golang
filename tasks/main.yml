@@ -1,0 +1,6 @@
+---
+- ansible.builtin.import_tasks: package_install.yml
+  when: not golang_binary_install.enable
+
+- ansible.builtin.import_tasks: binary_install.yml
+  when: golang_binary_install.enable and golang_binary_install.version | length > 0

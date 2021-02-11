@@ -1,0 +1,31 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: golang
+  author: webdavis
+  description: Golang for Linux
+  license: license (MIT, etc)
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+    - name: Debian
+      versions:
+        - buster
+    - name: Raspberry Pi OS
+      versions:
+        - buster
+  galaxy_tags:
+    - go
+    - development
+    - system
+    - web
+    - ubuntu
+    - focal
+    - debian
+    - buster
+    - raspbian
+    - raspberry
+    - pi

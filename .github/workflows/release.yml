@@ -1,0 +1,48 @@
+---
+# This workflow requires a GALAXY_API_KEY GitHub secret present in the GitHub
+# repository or organization.
+# Credit: geerlingguy
+#
+# See: https://github.com/marketplace/actions/publish-ansible-role-to-galaxy
+# See: https://github.com/ansible/galaxy/issues/46
+
+name: Release
+'on':
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the codebase
+        uses: actions/checkout@v2
+
+      - name: Retrieve Python version
+        run: echo "::set-output name=PYTHON_VERSION::$(cat .python-version)"
+        id: python_version
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ steps.python_version.outputs.PYTHON_VERSION }}
+
+      - name: Retrieve Poetry version
+        run: echo "::set-output name=POETRY_VERSION::$(cat .poetry-version)"
+        id: poetry_version
+
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ steps.poetry_version.outputs.POETRY_VERSION }}
+
+      - name: Install Python dependencies
+        run: poetry install
+
+      - name: Trigger a new import on Galaxy.
+        run: |
+          poetry run ansible-galaxy role import --api-key ${{ secrets.GALAXY_API_KEY }} \
+          $(echo ${{ github.repository }} | cut -d/ -f1) \
+          $(echo ${{ github.repository }} | cut -d/ -f2)

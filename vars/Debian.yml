@@ -1,0 +1,6 @@
+---
+# Golang packages available are:
+# - golang-go
+# - gccgo-go
+__go_packages:
+  - golang-go
