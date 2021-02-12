@@ -1,0 +1,23 @@
+---
+extends: default
+
+rules:
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+      - 'yes'
+      - 'no'
+  line-length:
+    max: 120
+    level: warning
+    ignore: |
+      tasks/versioned_install.yml
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: true
+  trailing-spaces: {}
+
+ignore: |
+  .venv/

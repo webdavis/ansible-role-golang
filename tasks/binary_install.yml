@@ -1,0 +1,72 @@
+---
+- name: Determine Go Architecture
+  ansible.builtin.set_fact:
+    go_architecture: "{{ {
+                      'x86_64': 'amd64',
+                      'aarch64': 'arm64',
+                      'armv7l': 'armv6l'
+                      }[ansible_architecture] | default('amd64') }}"
+
+- name: Download Go Binary Release and Verify with Checksum
+  ansible.builtin.get_url:
+    checksum: "sha256:{{ vars['golang_checksum'][go_architecture] }}"
+    url: "https://golang.org/dl/go{{ golang_binary_install.version }}.linux-{{ go_architecture }}.tar.gz"
+    dest: /tmp
+  register: go_tarball
+  when: golang_checksum is defined
+  changed_when: false
+
+- name: Define GOROOT
+  ansible.builtin.set_fact:
+    goroot: "{{ golang_goroot_parent_dir + '/go' + golang_binary_install.version + '.linux-' + go_architecture
+             if golang_goroot_versioned
+             else golang_goroot_parent_dir + '/go' }}"
+
+- name: Force Go Package Update
+  ansible.builtin.file:
+    path: "{{ goroot }}"
+    state: absent
+  when: golang_force_update
+
+- name: Extract remote_src Tarball
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: "{{ go_tarball.dest }}"
+    dest: "{{ golang_goroot_parent_dir }}"
+    creates: "{{ goroot }}"
+  when: golang_checksum is defined
+
+- name: Remove Tarball
+  ansible.builtin.file:
+    path: "{{ go_tarball.dest }}"
+    state: absent
+  when: golang_checksum is defined
+  changed_when: false
+
+- name: Download and Extract Tarball
+  ansible.builtin.unarchive:
+    src: "https://golang.org/dl/go{{ golang_binary_install.version }}.linux-{{ go_architecture }}.tar.gz"
+    dest: "{{ golang_goroot_parent_dir }}"
+    remote_src: yes
+    creates: "{{ goroot }}"
+  when: golang_checksum is not defined
+
+# Just a personal preference. This helps me track which versions I've used.
+- name: Rename go directory to include version
+  ansible.builtin.command:
+    cmd: mv "{{ golang_goroot_parent_dir }}/go" "{{ goroot }}"
+    creates: "{{ goroot }}"
+  when: golang_goroot_versioned
+
+- name: Include Environment Setup
+  ansible.builtin.include_tasks: set_env_vars.yml
+  when: golang_goroot or (golang_gopath is defined and golang_gopath | length > 0)
+
+- name: Create symbolic link
+  ansible.builtin.file:
+    src: "{{ goroot }}/bin/go"
+    dest: "/usr/local/bin/{{ item }}"
+    state: link
+  loop:
+    - go
+    - gofmt

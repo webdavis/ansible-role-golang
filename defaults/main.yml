@@ -1,0 +1,39 @@
+---
+# Set golang_packages if you would like to use a different version than the default for the OS
+# (see defaults per operating system in the `vars` directory).
+# golang_packages: []
+
+# To install a specific version of the Go programming language, set
+# golang_binary_install.enable to true and golang_binary_install.version to the version
+# number in semver format (e.g. "1.15.8").
+golang_binary_install:
+  enable: false
+  version: ""
+
+# If you want to verify the integrity of the versioned golang package, then set
+# golang_checksum.<architecture> to the SHA256 Checksum of the package. You can get the
+# checksums from: https://golang.org/dl/
+# (Note: at this time only the following architectures are supported. If you would like to
+# support additional architectures then open a pull request at
+# https://github.com/webdavis/ansible-role-golang/pulls.)
+# golang_checksum:
+#   amd64:
+#   arm64:
+#   armv6l:
+
+# Set golang_goroot to true to set the GOROOT environment variable, and this role will
+# dynamically configure it.
+golang_goroot: false
+
+# Set golang_goroot_parent_dir to change the parent directory of GOROOT.
+golang_goroot_parent_dir: /usr/local
+
+# Set golang_goroot_versioned to true to append the golang version to GOROOT.
+# (This make it easier to track golang versions in dev environments.)
+golang_goroot_versioned: false
+
+# Set golang_gopath to the value of the GOPATH environment variable.
+# golang_gopath: /home/user/go
+
+# Set golang_force_update to force the golang package to be redownloaded.
+golang_force_update: false

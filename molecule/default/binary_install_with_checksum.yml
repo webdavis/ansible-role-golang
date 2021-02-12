@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  vars:
+    golang_binary_install:
+      enable: true
+      version: 1.15.8
+    golang_checksum:
+      amd64: d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b
+
+  pre_tasks:
+    - name: Update Apt Cache
+      ansible.builtin.apt: "update_cache=true cache_valid_time={{ 60 * 15 }}"
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+  roles:
+    - ansible-role-golang
