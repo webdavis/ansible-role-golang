@@ -1,8 +1,8 @@
 ---
 - name: Install Go
-  ansible.builtin.apt: "name={{ go_packages }} update_cache=true cache_valid_time={{ 60 * 15 }}"
+  ansible.builtin.apt: "name={{ go_packages }} update_cache=yes cache_valid_time={{ 60 * 15 }}"
   when: not golang_force_update
 
 - name: Install Latest Go
-  ansible.builtin.apt: "name={{ go_packages }} state=latest update_cache=true cache_valid_time={{ 60 * 15 }}"
+  ansible.builtin.apt: "name={{ go_packages }} state=latest update_cache=yes cache_valid_time={{ 60 * 15 }}"
   when: golang_force_update

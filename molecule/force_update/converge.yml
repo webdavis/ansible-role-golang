@@ -1,12 +1,48 @@
 ---
-- name: Verify
+- name: Converge
   hosts: all
   become: true
 
-  tasks:
+  vars:
+    golang_binary_install:
+      enable: true
+      version: 1.15.8
+    golang_goroot_versioned: true
+
+  pre_tasks:
+    - name: Update Apt Cache
+      ansible.builtin.apt: "update_cache=yes cache_valid_time={{ 60 * 15 }}"
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+  roles:
+    - ansible-role-golang
+
+  post_tasks:
+    - name: Add file to GOROOT
+      ansible.builtin.lineinfile:
+        path: "{{ goroot }}/force_update_file"
+        line: foobar
+        create: yes
+
+- name: Force Update
+  hosts: all
+  become: true
+
+  vars:
+    golang_binary_install:
+      enable: true
+      version: 1.15.8
+    golang_goroot_versioned: true
+    golang_force_update: true
+
+  roles:
+    - ansible-role-golang
+
+  post_tasks:
     - name: Check if force_update_test_file Exists
       stat:
-        path: /usr/local/go/force_update_file"
+        path: "{{ goroot }}/force_update_file"
       register: force_update_file
 
     - name: Ensure the Update was Forced

@@ -1,6 +1,6 @@
 ---
-# Set golang_packages if you would like to use a different version than the default for the OS
-# (see defaults per operating system in the `vars` directory).
+# Set golang_packages if you would like to use a different version than the default for the OS.
+# (See defaults per operating system in the `vars` directory.)
 # golang_packages: []
 
 # To install a specific version of the Go programming language, set
