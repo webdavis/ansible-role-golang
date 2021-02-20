@@ -12,7 +12,7 @@
 
   pre_tasks:
     - name: Update Apt Cache
-      ansible.builtin.apt: "update_cache=true cache_valid_time={{ 60 * 15 }}"
+      ansible.builtin.apt: "update_cache=yes cache_valid_time={{ 60 * 15 }}"
       when: ansible_os_family == 'Debian'
       changed_when: false
 
