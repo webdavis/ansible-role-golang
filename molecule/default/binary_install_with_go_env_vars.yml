@@ -10,11 +10,5 @@
     golang_goroot: true
     golang_gopath: /root/go
 
-  pre_tasks:
-    - name: Update Apt Cache
-      ansible.builtin.apt: "update_cache=yes cache_valid_time={{ 60 * 15 }}"
-      when: ansible_os_family == 'Debian'
-      changed_when: false
-
   roles:
     - ansible-role-golang
