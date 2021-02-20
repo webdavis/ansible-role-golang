@@ -1,6 +1,8 @@
 Ansible Role: Golang
 ====================
 
+[![CI](https://github.com/webdavis/ansible-role-golang/actions/workflows/ci.yml/badge.svg)](https://github.com/webdavis/ansible-role-golang/actions/workflows/ci.yml)
+
 An Ansible Role that installs the [Go programming language](https://golang.org/).
 
 Requirements
