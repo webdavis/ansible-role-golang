@@ -12,6 +12,8 @@
   roles:
     - ansible-role-golang
 
+  # Place a file in the original GOPATH, which should NOT exist when the role runs a second time.
+  # This is verified by verify.yml.
   post_tasks:
     - name: Add file to GOROOT
       ansible.builtin.lineinfile:
@@ -32,14 +34,3 @@
 
   roles:
     - ansible-role-golang
-
-  post_tasks:
-    - name: Check if force_update_test_file Exists
-      stat:
-        path: "{{ goroot }}/force_update_file"
-      register: force_update_file
-
-    - name: Ensure the Update was Forced
-      ansible.builtin.fail:
-        msg: The update was not forced!
-      when: force_update_file.stat.exists
