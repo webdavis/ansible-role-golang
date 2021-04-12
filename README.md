@@ -56,8 +56,10 @@ golang_binary_install:
   version: ""
 ```
 
-Optionally, you may verify the binary install using the Checksum value provided by
-the Go maintainers. You can find the SHA256 values at https://golang.org/dl/.
+Optionally, you may verify the binary install using the Checksum value provided by the Go
+maintainers. This role will try to determine your system architecture dynamically so you must
+specify the system architecture of the Go binary that matches your systems architecture as a
+YAML key:
 
 ```yaml
 golang_checksum:
@@ -66,15 +68,18 @@ golang_checksum:
   armv6l:
 ```
 
-For example, to verify the download of the `go1.15.8.linux-amd64.tar.gz` Go package on a x86-64
-architecture, set it like so:
+> You can find the SHA256 values at https://golang.org/dl/.
+
+For example, to verify the download of the `go1.15.8.linux-amd64.tar.gz` package on an x86-64
+architecture, set the key to `amd64` and get the SHA256 value from https://golang.org/dl/,
+setting it in `defaults/main.yml` like so:
 
 ```yaml
 golang_checksum:
   amd64: d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b
 ```
 
-> **Note:** the system architecture will be obtained dynamically by this role.
+> **Note:** this role will try to determine the system architecture dynamically.
 
 If `golang_goroot: true` is set, then the `GOROOT` environment variable will be configured.
 
